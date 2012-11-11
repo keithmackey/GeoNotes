@@ -99,20 +99,10 @@ define("Note", ["backbone", "localstorage", "Geo"], function(Backbone, localstor
       },
       render: function(noteList){
         var data = $('#add-note-template').html(),
-          addNote = $('#addNote'),
-          latitude, longitude;
+          addNote = $('#addNote');
 
         // Cache value
         this.noteList = noteList;
-
-        // Geo location
-        var geo = new Geo();
-        geo.on("geo", function(position){
-            $('input[data-name=latitude]', $('#addNote')).val(position.coords.latitude);
-            $('input[data-name=longitude]', $('#addNote')).val(position.coords.longitude);
-            $('span[data-name=latitude]', $('#addNote')).text(position.coords.latitude);
-            $('span[data-name=longitude]', $('#addNote')).text(position.coords.longitude);
-        });
 
         // To render or not to render
         if(addNote.text().length > 0) {
@@ -120,9 +110,17 @@ define("Note", ["backbone", "localstorage", "Geo"], function(Backbone, localstor
           return; // lol wut?
         }
 
+        // Geo location
+        var geo = new Geo();
+        var self = this;
+        geo.on("geo", function(position){
+            $('span[data-name=latitude]', $('#addNote')).text(position.coords.latitude);
+            $('span[data-name=longitude]', $('#addNote')).text(position.coords.longitude);
+            self.geo = geo;
+        });
+
         // Append
         addNote.append(data);
-
 
         return this;
       },
@@ -130,16 +128,13 @@ define("Note", ["backbone", "localstorage", "Geo"], function(Backbone, localstor
         // Variables
         var addNote = $('#addNote'),
           text = $('textarea[name=noteText]', addNote).val(),
-          latitude = $('input[data-name=latitude]', addNote).val(),
-          longitude = $('input[data-name=longitude]', addNote).val();
+          position = this.geo.currentPosition;
         // Add note
-        this.noteList.add(new Note.Model({
+        note = new Note.Model({
           text: text,
-          position: {
-            lat: latitude,
-            lng: longitude
-          }
-        }));
+          position: position
+        });
+        this.noteList.add(note);
         // Redirect
         window.location.hash = '';
       }
