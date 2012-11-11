@@ -104,7 +104,7 @@ define("Note", ["backbone", "localstorage", "Geo"], function(Backbone, localstor
         this.$el.html($('<img />').attr({
           'src': '/img/dino.png'
         })).prepend(
-          $('<a href="#"><i class="icon-step-backward"></i>Back</a>')
+          $('<a href="#"><i class="icon-step-backward"></i>Back!</a>')
         );
         return this;
       }
